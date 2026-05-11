@@ -47,6 +47,7 @@ inline std::ostream & operator<<(std::ostream & os,const Point & in){
     return os; 
 }
 
+
 /**
 * @brief Specialising std::formatter for the Point class
 */

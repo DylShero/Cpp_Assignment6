@@ -5,7 +5,10 @@ CXXFLAGS = -Wall -Wextra -O2 -std=c++23
 LDFLAGS  := #-lstdc++exp #For print in windows
 
 #Libraries for Assignment 6c
-BOOST_LIBS = -lboost_mpi -lboost_serialization
+BOOST_ROOT = /home/support/rl8/spack/1.1.1/opt/spack/linux-x86_64_v3/boost-1.89.0-66rwt5vi6urjsapzm2awqxbeuwnrexld
+BOOST_INC  = -I$(BOOST_ROOT)/include
+BOOST_LDIR = -L$(BOOST_ROOT)/lib
+BOOST_LIBS = -lboost_mpi-mt-d-x64 -lboost_serialization-mt-d-x64
 
 #Target Names
 TARGETA = assignment6a
@@ -25,7 +28,7 @@ $(TARGETB): $(TARGETB).cc point.cc ConvexHull.cc
 
 #Assignment 6c
 $(TARGETC): $(TARGETC).cc
-	$(MPICXX) $(CXXFLAGS) -o $(TARGETC) $(TARGETC).cc $(BOOST_LIBS) $(LDFLAGS)
+	$(MPICXX) $(CXXFLAGS) $(BOOST_INC) -o $(TARGETC) $(TARGETC).cc $(BOOST_LDIR) $(BOOST_LIBS) $(LDFLAGS)
 
 #Clean
 clean:

@@ -40,7 +40,7 @@ void sort_points(std::vector<Point>& points) {
         if (a.x == b.x) {
             return a.y < b.y;
         }
-        // Otherwise, sort by the x-coordinate
+        //Otherwise sort by the x-coordinate
         return a.x < b.x;
     };
 

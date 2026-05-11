@@ -38,7 +38,7 @@ std::vector<Point> ConvexHull::generate_hull() {
         hull.push_back(points[i]);
     }
 
-    // The last point added in the top half is the same as the first point of the bottom half, so we remove it to avoid duplicates.
+    //The last point added in the top half is the same as the first point of the bottom half, so we remove it to avoid duplicates.
     hull.pop_back();
 
     return hull;

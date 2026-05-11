@@ -2,7 +2,7 @@
 CXX      = g++
 MPICXX   = mpicxx
 CXXFLAGS = -Wall -Wextra -O2 -std=c++23
-LDFLAGS  := -lstdc++exp #For print in windows
+LDFLAGS  := #-lstdc++exp #For print in windows
 
 #Libraries for Assignment 6c
 BOOST_LIBS = -lboost_mpi -lboost_serialization
@@ -23,8 +23,8 @@ $(TARGETA): $(TARGETA).cc
 $(TARGETB): $(TARGETB).cc point.cc ConvexHull.cc
 	$(CXX) $(CXXFLAGS) -o $(TARGETB) $(TARGETB).cc point.cc ConvexHull.cc $(LDFLAGS)
 
-#Assignment 6c (MPI + Boost)
-$(TARGETC): $(TARGETC).cpp
+#Assignment 6c
+$(TARGETC): $(TARGETC).cc
 	$(MPICXX) $(CXXFLAGS) -o $(TARGETC) $(TARGETC).cc $(BOOST_LIBS) $(LDFLAGS)
 
 #Clean

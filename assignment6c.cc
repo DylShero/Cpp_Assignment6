@@ -131,9 +131,6 @@ int main()
 	if(world.rank()==0){
 		std::vector<Stats> all_stats;
         boost::mpi::gather(world, proc_stats, all_stats, 0);
-
-        std::println("Simulation Results:");
-        std::println("-------------------");
         for (const auto& s : all_stats) {
             std::println("Rank {:2} | Mean: {:.4f} | Variance: {:.4f} | In-The-Money: {:.2f}%", 
                          s.processor_rank, s.mean, s.variance, s.in_the_money * 100.0);

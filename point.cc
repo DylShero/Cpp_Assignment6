@@ -34,7 +34,6 @@ void write_to_file(std::string fn, std::vector<Point> pts) {
 }
 
 void sort_points(std::vector<Point>& points) {
-    void sort_points(std::vector<Point>& points) {
     //Lambda expression to compare two points
     auto comparePoints = [](const Point& a, const Point& b) {
         //If the x-coordinates are  the same, sort by the y
@@ -47,5 +46,5 @@ void sort_points(std::vector<Point>& points) {
 
     //Sort with lambda expression
     std::sort(points.begin(), points.end(), comparePoints);
-}
+
 }

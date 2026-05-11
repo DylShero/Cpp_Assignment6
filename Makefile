@@ -20,8 +20,8 @@ $(TARGETA): $(TARGETA).cc
 	$(CXX) $(CXXFLAGS) -o $(TARGETA) $(TARGETA).cc $(LDFLAGS)
 
 #Assignment 6b 
-$(TARGETB): $(TARGETB).cc
-	$(CXX) $(CXXFLAGS) -o $(TARGETB) $(TARGETB).cc $(LDFLAGS) 
+$(TARGETB): $(TARGETB).cc point.cc ConvexHull.cc
+	$(CXX) $(CXXFLAGS) -o $(TARGETB) $(TARGETB).cc point.cc ConvexHull.cc $(LDFLAGS)
 
 #Assignment 6c (MPI + Boost)
 $(TARGETC): $(TARGETC).cpp

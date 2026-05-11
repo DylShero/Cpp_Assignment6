@@ -5,7 +5,7 @@
  * @version 7.0
  * @date 2026-04-06
  */
-#include <println>
+#include <print>
 #include <vector>
 #include <random>
 #include <functional>
@@ -69,6 +69,17 @@ int main(void)
      * ConvexHull CH_right from the rightmost one-third of points from CH above
      */
 
+    //Iterators boundaries for each segment
+    auto it_start = points.begin();
+    auto it_mid1  = it_start + (n / 3);
+    auto it_mid2  = it_start + 2 * (n / 3);
+    auto it_end   = points.end();
+
+    //Three hull objects
+    ConvexHull CH_left(it_start, it_mid1);
+    ConvexHull CH_mid(it_mid1, it_mid2);
+    ConvexHull CH_right(it_mid2, it_end);
+
     start = std::chrono::steady_clock::now();
     {
         /*
@@ -79,11 +90,19 @@ int main(void)
          *
          */
 
+        auto fut1 = std::async(policy, &ConvexHull::generate_hull, &CH_left);
+        auto fut2 = std::async(policy, &ConvexHull::generate_hull, &CH_mid);
+        auto fut3 = std::async(policy, &ConvexHull::generate_hull, &CH_right);
+
         /*
          * If you run deferred policy then you the task would not start executing
          * normally until you called "get" or wait on the future. Call wait on them
          * below here
          */
+
+        fut1.wait();
+        fut2.wait();
+        fut3.wait();
 
     } // Leave these braces here. the ~futures will block here so if we had
       // had asynchonous policy we wouldn't even need to do the waits above

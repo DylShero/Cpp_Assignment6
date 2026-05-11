@@ -31,6 +31,14 @@ struct Stats {
     unsigned processor_rank;
 
     /// TODO: Add serialize function
+	template<class Archive>
+    void serialize(Archive & ar, const unsigned int version)
+    {
+        ar & mean;
+        ar & variance;
+        ar & in_the_money;
+        ar & processor_rank;
+    }
 };
 
 // Struct to hold simulation parameters. You won't have to change this
@@ -79,15 +87,60 @@ int main()
 		std::valarray<double> vals(100.0, params.paths_per_proc);   // S0 = 100
 		std::valarray<double> payoff(0.0, params.paths_per_proc);
 		std::valarray<double> random_numbers(0.0, params.paths_per_proc);
+		std::valarray<double> sum_vals(0.0, params.paths_per_proc);
 
         /// TODO: Write code to do the simulation for this process.
         ///     Note that it should only take about 15-20 lines
+
+		double drift = params.mu - 0.5 * params.sigma * params.sigma;
+
+		for (unsigned t = 0; t < params.T; ++t) {
+            std::generate(std::begin(random_numbers), std::end(random_numbers), rng);
+            
+            //St+1 = St * exp(drift + sigma * Z)
+            std::valarray<double> exponent = drift + (params.sigma * random_numbers);
+            vals *= std::exp(exponent);
+            
+            //Accumulate prices for the Asian average
+            sum_vals += vals;
+        }
+
+		std::valarray<double> averages = sum_vals / static_cast<double>(params.T);
+
+        //Calculate Payoff: max(S_bar - K, 0)
+        payoff = averages - params.strike;
+        payoff[payoff < 0.0] = 0.0; //Payoff cannot be less than 0
+
+        //Populate the Stats struct
+        proc_stats.processor_rank = world.rank();
+        
+        //Mean
+        proc_stats.mean = payoff.sum() / params.paths_per_proc;
+        
+        //Variance: E(X^2) - (E(X))^2
+        std::valarray<double> payoff_squared = payoff * payoff;
+        double mean_of_squares = payoff_squared.sum() / params.paths_per_proc;
+        proc_stats.variance = mean_of_squares - (proc_stats.mean * proc_stats.mean);
+
+        //In the money fraction
+        long count = std::count_if(std::begin(payoff), std::end(payoff), [](double p){ return p > 0.0; });
+        proc_stats.in_the_money = static_cast<double>(count) / params.paths_per_proc;
 	}
 
 	// TODO: Gather values back from other processes to process 0 and print to screen
 	if(world.rank()==0){
+		std::vector<Stats> all_stats;
+        boost::mpi::gather(world, proc_stats, all_stats, 0);
+
+        std::println("Simulation Results:");
+        std::println("-------------------");
+        for (const auto& s : all_stats) {
+            std::println("Rank {:2} | Mean: {:.4f} | Variance: {:.4f} | In-The-Money: {:.2f}%", 
+                         s.processor_rank, s.mean, s.variance, s.in_the_money * 100.0);
+        }
 	}
 	else{
+		boost::mpi::gather(world, proc_stats, 0);
 	}
 
 	return 0;
